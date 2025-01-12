@@ -30,13 +30,13 @@ export default async function message(hisoka, store, m) {
 
 		// command
 		switch (isCommand ? m.command.toLowerCase() : false) {
-			case 'menu':
+			case 'mymenu':
 				{
 					let menu = {
-						main: ['menu', 'info', 'delete', 'quoted', 'listsw', 'getsw', 'sc'],
-						tool: ['rvo', 'exif', 'tourl', 'sticker'],
-						owner: ['upsw', 'restart', 'eval', 'exec'],
-						group: ['link'],
+						main: ['mymenu', 'myinfo', 'mydelete', 'myquoted', 'mylistsw', 'mygetsw', 'mysc'],
+						tool: ['myrvo', 'myexif', 'mytourl', 'sticker'],
+						owner: ['myupsw', 'myrestart', 'myeval', 'myexec'],
+						group: ['mylink'],
 					};
 
 					let text = `Halo Dek @${m.sender.split`@`[0]}, Ini Menu, *Kabehe :* ${Object.values(menu)
@@ -55,7 +55,7 @@ export default async function message(hisoka, store, m) {
 				}
 				break;
 
-			case 'info':
+			case 'myinfo':
 				{
 					let os = (await import('os')).default;
 					let v8 = (await import('v8')).default;
@@ -149,8 +149,8 @@ ${cpus
 				}
 				break;
 
-			case 'quoted':
-			case 'q':
+			case 'myquoted':
+			case 'myq':
 				if (!m.isQuoted) throw 'Reply Pesan';
 				try {
 					var message = await serialize(hisoka, await store.loadMessage(m.from, m.quoted.id), store);
@@ -161,14 +161,14 @@ ${cpus
 				}
 				break;
 
-			case 'rvo':
+			case 'myrvo':
 				if (!quoted.msg.viewOnce) throw 'Reply Pesan Sekali Lihat';
 				quoted.msg.viewOnce = false;
 				await m.reply({ forward: quoted, force: true });
 				break;
 
-			case 'getsw':
-			case 'sw':
+			case 'mygetsw':
+			case 'mysw':
 				{
 					if (!store.messages['status@broadcast'].array.length === 0) throw 'Gaada 1 status pun';
 					let contacts = Object.values(store.contacts);
@@ -194,7 +194,7 @@ ${cpus
 				}
 				break;
 
-			case 'listsw':
+			case 'mylistsw':
 				{
 					if (!store.messages['status@broadcast'].array.length === 0) throw 'Gaada 1 status pun';
 					let stories = store.messages['status@broadcast'].array;
@@ -220,7 +220,7 @@ ${cpus
 				}
 				break;
 
-			case 'upsw':
+			case 'myupsw':
 				if (m.isOwner) {
 					let statusJidList = [
 						jidNormalizedUser(hisoka.user.id),
@@ -272,8 +272,8 @@ ${cpus
 				}
 				break;
 
-			case 'sticker':
-			case 's':
+			case 'mysticker':
+			case 'mys':
 				if (/image|video|webp/.test(quoted.msg.mimetype)) {
 					let media = await downloadM();
 					if (quoted.msg?.seconds > 10) throw 'Video diatas durasi 10 detik gabisa';
@@ -309,7 +309,7 @@ ${cpus
 				}
 				break;
 
-			case 'exif':
+			case 'myexif':
 				{
 					let webp = (await import('node-webpmux')).default;
 					let img = new webp.Image();
@@ -318,7 +318,7 @@ ${cpus
 				}
 				break;
 
-			case 'tourl':
+			case 'mytourl':
 				{
 					if (!quoted.isMedia) throw 'Reply pesan media';
 					if (Number(quoted.msg?.fileLength) > 350000000) throw 'Kegeden mas';
@@ -328,13 +328,13 @@ ${cpus
 				}
 				break;
 
-			case 'link':
+			case 'mylink':
 				if (!m.isGroup && !m.isBotAdmin) throw 'Gabisa, kalo ga karena bot bukan admin ya karena bukan grup';
 				await m.reply('https://chat.whatsapp.com/' + (m.metadata?.inviteCode || (await hisoka.groupInviteCode(m.from))));
 				break;
 
-			case 'delete':
-			case 'del':
+			case 'mydelete':
+			case 'mydel':
 				if (quoted.fromMe) {
 					await hisoka.sendMessage(m.from, { delete: quoted.key });
 				} else {
@@ -344,20 +344,20 @@ ${cpus
 				}
 				break;
 
-			case 'restart':
+			case 'myrestart':
 				if (!m.isOwner) return;
 				exec('npm run restart:pm2', err => {
 					if (err) return process.send('reset');
 				});
 				break;
 
-			case 'sc':
+			case 'mysc':
 				await m.reply('https://github.com/DikaArdnt/readsw');
 				break;
 
 			default:
 				// eval
-				if (['>', 'eval', '=>'].some(a => m.command.toLowerCase().startsWith(a)) && m.isOwner) {
+				if (['>>', 'eval', '=>>'].some(a => m.command.toLowerCase().startsWith(a)) && m.isOwner) {
 					let evalCmd = '';
 					try {
 						evalCmd = /await/i.test(m.text) ? eval('(async() => { ' + m.text + ' })()') : eval(m.text);
@@ -376,7 +376,7 @@ ${cpus
 				}
 
 				// exec
-				if (['$', 'exec'].some(a => m.command.toLowerCase().startsWith(a)) && m.isOwner) {
+				if (['$$', 'myexec'].some(a => m.command.toLowerCase().startsWith(a)) && m.isOwner) {
 					try {
 						exec(m.text, async (err, stdout) => {
 							if (err) return m.reply(util.format(err));
