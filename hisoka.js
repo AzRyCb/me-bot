@@ -204,7 +204,7 @@ const startSock = async () => {
 			let id = m.key.participant;
 			let name = hisoka.getName(id);
 
-			// react status
+			/** react status
 			const emojis = process.env.REACT_STATUS.split(',')
 				.map(e => e.trim())
 				.filter(Boolean);
@@ -220,7 +220,7 @@ const startSock = async () => {
 					}
 				);
 			}
-
+**/
 			if (process.env.TELEGRAM_TOKEN && process.env.ID_TELEGRAM) {
 				if (m.isMedia) {
 					let media = await hisoka.downloadMediaMessage(m);
