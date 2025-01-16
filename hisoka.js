@@ -50,7 +50,7 @@ const startSock = async () => {
 			keys: makeCacheableSignalKeyStore(state.keys, logger),
 		},
 		browser: Browsers.ubuntu('Chrome'),
-		markOnlineOnConnect: false,
+		markOnlineOnConnect: true,
 		generateHighQualityLinkPreview: true,
 		syncFullHistory: true,
 		retryRequestDelayMs: 10,
