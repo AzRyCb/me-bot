@@ -33,15 +33,17 @@ export default async function message(hisoka, store, m) {
 			case 'mymenu':
 				{
 					let menu = {
-						main: ['mymenu', 'myinfo', 'mydelete', 'myquoted', 'mylistsw', 'mygetsw', 'mysc'],
-						tool: ['myrvo', 'myexif', 'mytourl', 'mysticker'],
+						main: ['mymenu', 'myinfo', //'mydelete', 'myquoted',
+						'mylistsw', 'mygetsw', 'mysc'],
+						tool: ['myrvo', 'myexif', //'mytourl', 'mysticker'
+						],
 						owner: ['myupsw', 'myrestart', 'myeval', 'myexec'],
 						group: ['mylink'],
 					};
 
-					let text = `Halo Dek @${m.sender.split`@`[0]}, Ini Menu, *Kabehe :* ${Object.values(menu)
+					let text = `Halo @${m.sender.split`@`[0]} terdapat, ${Object.values(menu)
 						.map(a => a.length)
-						.reduce((total, num) => total + num, 0)}\n\n`;
+						.reduce((total, num) => total + num, 0)}fitur\n\n`;
 
 					Object.entries(menu)
 						.map(([type, command]) => {
@@ -61,10 +63,8 @@ export default async function message(hisoka, store, m) {
 					let v8 = (await import('v8')).default;
 					let { performance } = (await import('perf_hooks')).default;
 					let eold = performance.now();
-
 const more = String.fromCharCode(8206)
 const readMore = more.repeat(4001)
-
 					const used = process.memoryUsage();
 					const cpus = os.cpus().map(cpu => {
 						cpu.total = Object.keys(cpu.times).reduce((last, type) => last + cpu.times[type], 0);
@@ -98,6 +98,10 @@ const readMore = more.repeat(4001)
 
 					let teks = `
 *Ping :* *_${Number(neow - eold).toFixed(2)} milisecond(s)_*
+*Runtime OS:*
+${Func.runtime(os.uptime())}
+*Runtime Bot:*
+${Func.runtime(process.uptime())}
 ${readMore}
 💻 *_Info Server_*
 *- Hostname :* ${os.hostname() || hisoka.user?.name}
@@ -105,12 +109,6 @@ ${readMore}
 *- OS :* ${os.version()} / ${os.release()}
 *- Arch :* ${os.arch()}
 *- RAM :* ${Func.formatSize(os.totalmem() - os.freemem(), false)} / ${Func.formatSize(os.totalmem(), false)}
-
-*_Runtime OS_*
-${Func.runtime(os.uptime())}
-
-*_Runtime Bot_*
-${Func.runtime(process.uptime())}
 
 *_NodeJS Memory Usage_*
 ${Object.keys(used)
@@ -151,7 +149,7 @@ ${cpus
 					await m.reply(teks);
 				}
 				break;
-
+/*
 			case 'myquoted':
 			case 'myq':
 				if (!m.isQuoted) throw 'Reply Pesan';
@@ -163,7 +161,7 @@ ${cpus
 					throw 'Pesan gaada';
 				}
 				break;
-
+*/
 			case 'myrvo':
 				if (!quoted.msg.viewOnce) throw 'Reply Pesan Sekali Lihat';
 				quoted.msg.viewOnce = false;
@@ -274,7 +272,7 @@ ${cpus
 					}
 				}
 				break;
-
+/*
 			case 'mysticker':
 			case 'mys':
 				if (/image|video|webp/.test(quoted.msg.mimetype)) {
@@ -311,7 +309,7 @@ ${cpus
 					await m.reply({ sticker });
 				}
 				break;
-
+*/
 			case 'myexif':
 				{
 					let webp = (await import('node-webpmux')).default;
@@ -320,7 +318,7 @@ ${cpus
 					await m.reply(util.format(JSON.parse(img.exif.slice(22).toString())));
 				}
 				break;
-
+/**
 			case 'mytourl':
 				{
 					if (!quoted.isMedia) throw 'Reply pesan media';
@@ -330,12 +328,12 @@ ${cpus
 					await m.reply(url);
 				}
 				break;
-
+**/
 			case 'mylink':
 				if (!m.isGroup && !m.isBotAdmin) throw 'Gabisa, kalo ga karena bot bukan admin ya karena bukan grup';
 				await m.reply('https://chat.whatsapp.com/' + (m.metadata?.inviteCode || (await hisoka.groupInviteCode(m.from))));
 				break;
-
+/*
 			case 'mydelete':
 			case 'mydel':
 				if (quoted.fromMe) {
@@ -346,7 +344,7 @@ ${cpus
 					await hisoka.sendMessage(m.from, { delete: quoted.key });
 				}
 				break;
-
+*/
 			case 'myrestart':
 				if (!m.isOwner) return;
 				exec('npm run restart:pm2', err => {
@@ -355,7 +353,7 @@ ${cpus
 				break;
 
 			case 'mysc':
-				await m.reply('https://github.com/DikaArdnt/readsw');
+				await m.reply('Base: https://github.com/DikaArdnt/readsw');
 				break;
 
 			default:
