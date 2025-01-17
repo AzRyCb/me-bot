@@ -62,6 +62,9 @@ export default async function message(hisoka, store, m) {
 					let { performance } = (await import('perf_hooks')).default;
 					let eold = performance.now();
 
+const more = String.fromCharCode(8206)
+const readMore = more.repeat(4001)
+
 					const used = process.memoryUsage();
 					const cpus = os.cpus().map(cpu => {
 						cpu.total = Object.keys(cpu.times).reduce((last, type) => last + cpu.times[type], 0);
@@ -95,7 +98,7 @@ export default async function message(hisoka, store, m) {
 
 					let teks = `
 *Ping :* *_${Number(neow - eold).toFixed(2)} milisecond(s)_*
-
+${readMore}
 💻 *_Info Server_*
 *- Hostname :* ${os.hostname() || hisoka.user?.name}
 *- Platform :* ${os.platform()}
