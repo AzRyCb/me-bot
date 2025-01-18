@@ -19,8 +19,6 @@
   "dependencies": {
     "baileys": "latest",
     "dotenv": "^16.3.1",
-    "file-type": "latest",
-    //"fluent-ffmpeg": "latest",
-    //"node-webpmux": "latest"
+    "file-type": "latest"
   }
 }
