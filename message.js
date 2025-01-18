@@ -34,8 +34,7 @@ export default async function message(hisoka, store, m) {
 					let menu = {
 						main: ['mymenu', 'myinfo',
 						'mylistsw', 'mygetsw', 'mysc'],
-						tool: ['myrvo', 'myexif']
-						],
+						tool: ['myrvo', 'myexif'],
 						owner: ['myupsw', 'myrestart', 'myeval', 'myexec'],
 						group: ['mylink']
 					};
