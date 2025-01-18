@@ -1,7 +1,6 @@
 import { delay, jidNormalizedUser } from 'baileys';
 import util from 'util';
 import { exec } from 'child_process';
-
 import * as Func from './lib/function.js';
 import Color from './lib/color.js';
 import serialize, { getContentType } from './lib/serialize.js';
@@ -33,12 +32,12 @@ export default async function message(hisoka, store, m) {
 			case 'mymenu':
 				{
 					let menu = {
-						main: ['mymenu', 'myinfo', //'mydelete', 'myquoted',
+						main: ['mymenu', 'myinfo',
 						'mylistsw', 'mygetsw', 'mysc'],
-						tool: ['myrvo', 'myexif', //'mytourl', 'mysticker'
+						tool: ['myrvo', 'myexif']
 						],
 						owner: ['myupsw', 'myrestart', 'myeval', 'myexec'],
-						group: ['mylink'],
+						group: ['mylink']
 					};
 
 					let text = `Halo @${m.sender.split`@`[0]} terdapat, ${Object.values(menu)
@@ -149,19 +148,7 @@ ${cpus
 					await m.reply(teks);
 				}
 				break;
-/*
-			case 'myquoted':
-			case 'myq':
-				if (!m.isQuoted) throw 'Reply Pesan';
-				try {
-					var message = await serialize(hisoka, await store.loadMessage(m.from, m.quoted.id), store);
-					if (!message.isQuoted) throw 'Pesan quoted gaada';
-					await m.reply({ forward: message.quoted, force: true });
-				} catch (e) {
-					throw 'Pesan gaada';
-				}
-				break;
-*/
+
 			case 'myrvo':
 				if (!quoted.msg.viewOnce) throw 'Reply Pesan Sekali Lihat';
 				quoted.msg.viewOnce = false;
@@ -272,44 +259,7 @@ ${cpus
 					}
 				}
 				break;
-/*
-			case 'mysticker':
-			case 'mys':
-				if (/image|video|webp/.test(quoted.msg.mimetype)) {
-					let media = await downloadM();
-					if (quoted.msg?.seconds > 10) throw 'Video diatas durasi 10 detik gabisa';
-					let exif;
-					if (m.text) {
-						let [packname, author] = m.text.split(/[,|\-+&]/);
-						exif = { packName: packname ? packname : '', packPublish: author ? author : '' };
-					} else {
-						exif = { packName: process.env.packName, packPublish: process.env.packPublish };
-					}
 
-					let sticker = await (await import('./lib/sticker.js')).writeExif({ mimetype: quoted.msg.mimetype, data: media }, exif);
-					await m.reply({ sticker });
-				} else if (m.mentions.length !== 0) {
-					for (let id of m.mentions) {
-						await delay(1500);
-						let url = await hisoka.profilePictureUrl(id, 'image');
-						let media = await Func.fetchBuffer(url);
-						let sticker = await (await import('./lib/sticker.js')).writeExif(media, { packName: process.env.packName, packPublish: process.env.packPublish });
-						await m.reply({ sticker });
-					}
-				} else if (/(https?:\/\/.*\.(?:png|jpg|jpeg|webp|mov|mp4|webm|gif))/i.test(m.text)) {
-					for (let url of Func.isUrl(m.text)) {
-						await delay(1500);
-						let media = await Func.fetchBuffer(url);
-						let sticker = await (await import('./lib/sticker.js')).writeExif(media, { packName: process.env.packName, packPublish: process.env.packPublish });
-						await m.reply({ sticker });
-					}
-				} else {
-					let media = await Func.fetchBuffer('https://www.hlapi.cn/api/mcj');
-					let sticker = await (await import('./lib/sticker.js')).writeExif(media, { packName: process.env.packName, packPublish: process.env.packPublish });
-					await m.reply({ sticker });
-				}
-				break;
-*/
 			case 'myexif':
 				{
 					let webp = (await import('node-webpmux')).default;
@@ -318,33 +268,12 @@ ${cpus
 					await m.reply(util.format(JSON.parse(img.exif.slice(22).toString())));
 				}
 				break;
-/**
-			case 'mytourl':
-				{
-					if (!quoted.isMedia) throw 'Reply pesan media';
-					if (Number(quoted.msg?.fileLength) > 350000000) throw 'Kegeden mas';
-					let media = await downloadM();
-					let url = /image|video/i.test(quoted.msg.mimetype) && !/webp/i.test(quoted.msg.mimetype) ? await Func.upload.telegra(media) : await Func.upload.pomf(media);
-					await m.reply(url);
-				}
-				break;
-**/
+				
 			case 'mylink':
 				if (!m.isGroup && !m.isBotAdmin) throw 'Gabisa, kalo ga karena bot bukan admin ya karena bukan grup';
 				await m.reply('https://chat.whatsapp.com/' + (m.metadata?.inviteCode || (await hisoka.groupInviteCode(m.from))));
 				break;
-/*
-			case 'mydelete':
-			case 'mydel':
-				if (quoted.fromMe) {
-					await hisoka.sendMessage(m.from, { delete: quoted.key });
-				} else {
-					if (!m.isBotAdmin) throw 'Bot bukan admin';
-					if (!m.isAdmin) throw 'Lhu bukan admin paok 😂';
-					await hisoka.sendMessage(m.from, { delete: quoted.key });
-				}
-				break;
-*/
+
 			case 'myrestart':
 				if (!m.isOwner) return;
 				exec('npm run restart:pm2', err => {
