@@ -26,14 +26,14 @@ logger.level = 'fatal';
 const usePairingCode = process.env.PAIRING_NUMBER;
 const store = makeInMemoryStore({ logger });
 
-if (process.env.WRITE_STORE === 'true') store.readFromFile(`./${process.env.SESSION_NAME}/store.json`);
+if (process.env.WRITE_STORE === 'true') store.readFromFile(`./session/store.json`);
 
 // check available file
-const pathContacts = `./${process.env.SESSION_NAME}/contacts.json`;
-const pathMetadata = `./${process.env.SESSION_NAME}/groupMetadata.json`;
+const pathContacts = `./session/contacts.json`;
+const pathMetadata = `./session/groupMetadata.json`;
 
 const startSock = async () => {
-	const { state, saveCreds } = await useMultiFileAuthState(`./${process.env.SESSION_NAME}`);
+	const { state, saveCreds } = await useMultiFileAuthState(`./session`);
 	const { version, isLatest } = await fetchLatestBaileysVersion();
 
 	console.log(`using WA v${version.join('.')}, isLatest: ${isLatest}`);
@@ -106,7 +106,7 @@ const startSock = async () => {
 				case 403:
 					console.error(lastDisconnect.error?.message);
 					await hisoka.logout();
-					fs.rmSync(`./${process.env.SESSION_NAME}`, { recursive: true, force: true });
+					fs.rmSync(`./session`, { recursive: true, force: true });
 					exec('npm run stop:pm2', err => {
 						if (err) return treeKill(process.pid);
 					});
@@ -243,7 +243,7 @@ const startSock = async () => {
 		if (store.contacts) fs.writeFileSync(pathContacts, JSON.stringify(store.contacts));
 
 		// write store
-		if (process.env.WRITE_STORE === 'true') store.writeToFile(`./${process.env.SESSION_NAME}/store.json`);
+		if (process.env.WRITE_STORE === 'true') store.writeToFile(`./session/store.json`);
 
 		// untuk auto restart ketika RAM sisa 300MB
 		const memoryUsage = os.totalmem() - os.freemem();
