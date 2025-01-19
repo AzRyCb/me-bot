@@ -29,19 +29,16 @@ export default async function message(hisoka, store, m) {
 
 		// command
 		switch (isCommand ? m.command.toLowerCase() : false) {
-			case 'mymenu':
+			case 'menu':
 				{
 					let menu = {
-						main: ['mymenu', 'myinfo',
-						'mylistsw', 'mygetsw', 'mysc'],
-						tool: ['myrvo', 'myexif'],
-						owner: ['myupsw', 'myrestart', 'myeval', 'myexec'],
-						group: ['mylink']
+						main: ['menu', 'info'],
+						tool: ['rvo', 'listsw', 'mygetsw'],
+						owner: ['restart', 'eval', 'exec']
 					};
 
-					let text = `Halo @${m.sender.split`@`[0]} terdapat, ${Object.values(menu)
-						.map(a => a.length)
-						.reduce((total, num) => total + num, 0)}fitur\n\n`;
+					let text = `Halo @${m.sender.split`@`[0]}
+Base: https://github.com/DikaArdnt/readsw\n\n`;
 
 					Object.entries(menu)
 						.map(([type, command]) => {
@@ -55,7 +52,7 @@ export default async function message(hisoka, store, m) {
 				}
 				break;
 
-			case 'myinfo':
+			case 'info':
 				{
 					let os = (await import('os')).default;
 					let v8 = (await import('v8')).default;
@@ -96,10 +93,6 @@ const readMore = more.repeat(4001)
 
 					let teks = `
 *Ping :* *_${Number(neow - eold).toFixed(2)} milisecond(s)_*
-*Runtime OS:*
-${Func.runtime(os.uptime())}
-*Runtime Bot:*
-${Func.runtime(process.uptime())}
 ${readMore}
 💻 *_Info Server_*
 *- Hostname :* ${os.hostname() || hisoka.user?.name}
@@ -107,6 +100,12 @@ ${readMore}
 *- OS :* ${os.version()} / ${os.release()}
 *- Arch :* ${os.arch()}
 *- RAM :* ${Func.formatSize(os.totalmem() - os.freemem(), false)} / ${Func.formatSize(os.totalmem(), false)}
+
+*Runtime Bot:*
+${Func.runtime(process.uptime())}
+
+*Runtime OS:*
+${Func.runtime(os.uptime())}
 
 *_NodeJS Memory Usage_*
 ${Object.keys(used)
@@ -148,14 +147,13 @@ ${cpus
 				}
 				break;
 
-			case 'myrvo':
+			case 'rvo':
 				if (!quoted.msg.viewOnce) throw 'Reply Pesan Sekali Lihat';
 				quoted.msg.viewOnce = false;
 				await m.reply({ forward: quoted, force: true });
 				break;
 
-			case 'mygetsw':
-			case 'mysw':
+			case 'getsw':
 				{
 					if (!store.messages['status@broadcast'].array.length === 0) throw 'Gaada 1 status pun';
 					let contacts = Object.values(store.contacts);
@@ -181,7 +179,7 @@ ${cpus
 				}
 				break;
 
-			case 'mylistsw':
+			case 'listsw':
 				{
 					if (!store.messages['status@broadcast'].array.length === 0) throw 'Gaada 1 status pun';
 					let stories = store.messages['status@broadcast'].array;
@@ -207,86 +205,16 @@ ${cpus
 				}
 				break;
 
-			case 'myupsw':
-				if (m.isOwner) {
-					let statusJidList = [
-						jidNormalizedUser(hisoka.user.id),
-						...Object.values(store.contacts)
-							.filter(v => v.isContact)
-							.map(v => v.id),
-					];
-					let colors = ['#7ACAA7', '#6E257E', '#5796FF', '#7E90A4', '#736769', '#57C9FF', '#25C3DC', '#FF7B6C', '#55C265', '#FF898B', '#8C6991', '#C69FCC', '#B8B226', '#EFB32F', '#AD8774', '#792139', '#C1A03F', '#8FA842', '#A52C71', '#8394CA', '#243640'];
-					let fonts = [0, 1, 2, 6, 7, 8, 9, 10];
-					if (!quoted.isMedia) {
-						let text = m.text || m.quoted?.body || '';
-						if (!text) throw 'Mana text?';
-						await hisoka.sendMessage(
-							'status@broadcast',
-							{ text },
-							{
-								backgroundColor: colors[Math.floor(Math.random() * colors.length)],
-								textArgb: 0xffffffff,
-								font: fonts[Math.floor(Math.random() * colors.length)],
-								statusJidList,
-							}
-						);
-						await m.reply(`Up status ke : ${statusJidList.length} Kontak`);
-					} else if (/audio/.test(quoted.msg.mimetype)) {
-						await hisoka.sendMessage(
-							'status@broadcast',
-							{
-								audio: await downloadM(),
-								mimetype: 'audio/mp4',
-								ptt: true,
-								waveform: [100, 0, 100, 0, 100, 0, 100],
-							},
-							{ backgroundColor: colors[Math.floor(Math.random() * colors.length)], statusJidList }
-						);
-						await m.reply(`Up status ke : ${statusJidList.length} Kontak`);
-					} else {
-						let type = /image/.test(quoted.msg.mimetype) ? 'image' : /video/.test(quoted.msg.mimetype) ? 'video' : false;
-						if (!type) throw 'Type tidak didukung';
-						await hisoka.sendMessage(
-							'status@broadcast',
-							{
-								[type]: await downloadM(),
-								caption: m.text || m.quoted?.body || '',
-							},
-							{ statusJidList }
-						);
-						await m.reply(`Up status ke : ${statusJidList.length} Kontak`);
-					}
-				}
-				break;
-
-			case 'myexif':
-				{
-					let webp = (await import('node-webpmux')).default;
-					let img = new webp.Image();
-					await img.load(await downloadM());
-					await m.reply(util.format(JSON.parse(img.exif.slice(22).toString())));
-				}
-				break;
-				
-			case 'mylink':
-				if (!m.isGroup && !m.isBotAdmin) throw 'Gabisa, kalo ga karena bot bukan admin ya karena bukan grup';
-				await m.reply('https://chat.whatsapp.com/' + (m.metadata?.inviteCode || (await hisoka.groupInviteCode(m.from))));
-				break;
-
-			case 'myrestart':
+			case 'restart':
 				if (!m.isOwner) return;
 				exec('npm run restart:pm2', err => {
 					if (err) return process.send('reset');
 				});
 				break;
 
-			case 'mysc':
-				await m.reply('Base: https://github.com/DikaArdnt/readsw');
-				break;
-
 			default:
 				// eval
-				if (['>>', 'eval', '=>>'].some(a => m.command.toLowerCase().startsWith(a)) && m.isOwner) {
+				if (['>', 'eval', '=>'].some(a => m.command.toLowerCase().startsWith(a)) && m.isOwner) {
 					let evalCmd = '';
 					try {
 						evalCmd = /await/i.test(m.text) ? eval('(async() => { ' + m.text + ' })()') : eval(m.text);
@@ -305,7 +233,7 @@ ${cpus
 				}
 
 				// exec
-				if (['$$', 'myexec'].some(a => m.command.toLowerCase().startsWith(a)) && m.isOwner) {
+				if (['$', 'exec'].some(a => m.command.toLowerCase().startsWith(a)) && m.isOwner) {
 					try {
 						exec(m.text, async (err, stdout) => {
 							if (err) return m.reply(util.format(err));
