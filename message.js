@@ -38,7 +38,7 @@ export default async function message(hisoka, store, m) {
 					};
 
 					let text = `Halo @${m.sender.split`@`[0]}
-Base: https://github.com/DikaArdnt/readsw\n\n`;
+By: https://github.com/DikaArdnt/readsw\n\n`;
 
 					Object.entries(menu)
 						.map(([type, command]) => {
