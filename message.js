@@ -207,7 +207,8 @@ ${cpus
 
 			case 'restart':
 				if (!m.isOwner) return;
-				exec('npm run restart:pm2', err => {
+				m.reply('Sedang Mereset...')
+				await exec('npm run restart:pm2', err => {
 					if (err) return process.send('reset');
 				});
 				break;
