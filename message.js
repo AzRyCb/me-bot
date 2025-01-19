@@ -29,11 +29,11 @@ export default async function message(hisoka, store, m) {
 
 		// command
 		switch (isCommand ? m.command.toLowerCase() : false) {
-			case 'menu':
+			case 'mymenu':
 				{
 					let menu = {
-						main: ['menu', 'info'],
-						tool: ['rvo', 'listsw', 'mygetsw'],
+						main: ['mymenu', 'myinfo'],
+						tool: ['myrvo', 'listsw', 'getsw'],
 						owner: ['restart', 'eval', 'exec']
 					};
 
@@ -52,7 +52,7 @@ Base: https://github.com/DikaArdnt/readsw\n\n`;
 				}
 				break;
 
-			case 'info':
+			case 'myinfo':
 				{
 					let os = (await import('os')).default;
 					let v8 = (await import('v8')).default;
@@ -147,7 +147,7 @@ ${cpus
 				}
 				break;
 
-			case 'rvo':
+			case 'myrvo':
 				if (!quoted.msg.viewOnce) throw 'Reply Pesan Sekali Lihat';
 				quoted.msg.viewOnce = false;
 				await m.reply({ forward: quoted, force: true });
