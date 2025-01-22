@@ -264,4 +264,41 @@ const startSock = async () => {
 	process.on('unhandledRejection', console.error);
 };
 
-startSock();
+async function clearSessions(folder = "./" + authFolder) {
+  try {
+    const filenames = fs.readdirSync(folder);
+    msgRetryCounterCache.flushAll();
+    const deletedFiles = await Promise.all(
+      filenames.map(async (file) => {
+        try {
+          const filePath = path.join(folder, file);
+          const stats = statSync(filePath);
+          if (
+            stats.isFile() &&
+            file.endsWith(".json") &&
+            file !== "creds.json"
+          ) {
+            unlinkSync(filePath);
+            return filePath;
+          }
+        } catch (err) {
+          console.error(`Error processing ${file}: ${err.message}`);
+          return null;
+        }
+      }),
+    );
+    const filteredDeletedFiles = lodash.filter(
+      deletedFiles,
+      (file) => file !== null,
+    );
+    logger.info(`Total sessions deleted: ${filteredDeletedFiles.length}`);
+    return filteredDeletedFiles;
+  } catch (err) {
+    console.error(`Error in Clear Sessions: ${err.message}`);
+    return [];
+  } finally {
+    setTimeout(() => clearSessions(folder), 65 * 60 * 1e3);
+  }
+}
+clearSessions
+await startSock();
