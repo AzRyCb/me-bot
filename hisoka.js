@@ -255,7 +255,8 @@ const startSock = async () => {
 				{ text: `penggunaan RAM mencapai *${formatSize(memoryUsage)}* waktunya merestart...` },
 				{ ephemeralExpiration: 24 * 60 * 60 * 1000 }
 			);
-			exec('npm run restart:pm2', err => {
+			await clearSession(folderPath);
+			await exec('npm run restart:pm2', err => {
 				if (err) return process.send('reset');
 			});
 		}
@@ -307,7 +308,7 @@ function clearSession(folder) {
 // Panggil fungsi untuk membersihkan folder setiap 15 menit (900000 ms)
 setInterval(() => {
     clearSession(folderPath);
-}, 900000); // 15 menit
+}, 86400000); // 24 jam (24 * 60 * 60 * 1000 ms)enit
 
 // Jalankan sekali langsung setelah script dimulai
 clearSession(folderPath);
