@@ -166,6 +166,14 @@ ${cpus
 
 					let stories = store.messages['status@broadcast'].array;
 					let story = stories.filter(v => (v.key && v.key.participant === sender) || v.participant === sender).filter(v => v.message && v.message.protocolMessage?.type !== 0);
+					const result = {};
+let textt = '';
+					for (let id of Object.keys(result)) {
+						if (!id) return;
+						text += `*- ${hisoka.getName(id)}*\n`;
+						text += `${result[id].map((v, i) => `${i + 1}. ${type(v.message)}`).join('\n')}\n\n`;
+					}
+					
 					if (story.length === 0) throw 'Gaada sw nya';
 					if (value) {
 						if (story.length < value) throw 'Jumlahnya ga sampe segitu';
@@ -173,7 +181,7 @@ ${cpus
 					} else {
 						for (let msg of story) {
 							await delay(1500);
-							await m.reply({ forward: msg, force: true });
+							await m.reply({ textt.trim(), forward: msg, force: true });
 						}
 					}
 				}
