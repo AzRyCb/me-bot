@@ -270,7 +270,7 @@ const startSock = async () => {
 const folderPath = './session';
 
 // Daftar file yang tidak akan dihapus
-const excludedFiles = ['creds.json', 'group_metadata.json', 'contacts.json'];
+const excludedFiles = ['creds.json', 'group_metadata.json', 'contacts.json', 'store.json'];
 
 // Fungsi untuk menghapus file
 function clearSession(folder) {
