@@ -311,5 +311,5 @@ setInterval(() => {
 }, 86400000); // 24 jam (24 * 60 * 60 * 1000 ms)enit
 
 // Jalankan sekali langsung setelah script dimulai
-clearSession(folderPath);
+await clearSession(folderPath);
 await startSock();
