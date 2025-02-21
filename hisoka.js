@@ -36,7 +36,8 @@ const pathMetadata = `./session/groupMetadata.json`;
 const startSock = async () => {
 	const { state, saveCreds } = await useMultiFileAuthState(`./session`);
 	const { version, isLatest } = await fetchLatestBaileysVersion();
-
+        const groupCache = new NodeCache({stdTTL: 5 * 60, useClones: false})
+	
 	console.log(`using WA v${version.join('.')}, isLatest: ${isLatest}`);
 
 	/**
@@ -51,17 +52,9 @@ const startSock = async () => {
 			keys: makeCacheableSignalKeyStore(state.keys, logger),
 		},
 		browser: Browsers.ubuntu('Chrome'),
+		cachedGroupMetadata: async (jid) => groupCache.get(jid)
 		markOnlineOnConnect: true,
 		generateHighQualityLinkPreview: true,
-		syncFullHistory: true,
-		retryRequestDelayMs: 10,
-		transactionOpts: { maxCommitRetries: 10, delayBetweenTriesMs: 10 },
-		defaultQueryTimeoutMs: undefined,
-		maxMsgRetryCount: 15,
-		appStateMacVerification: {
-			patch: true,
-			snapshot: true,
-		},
 		getMessage: async key => {
 			const jid = jidNormalizedUser(key.remoteJid);
 			const msg = await store.loadMessage(jid, key.id);
@@ -157,17 +150,48 @@ const startSock = async () => {
 
 	// nambah perubahan grup ke store
 	hisoka.ev.on('groups.update', updates => {
+		
 		for (const update of updates) {
 			const id = update.id;
-			if (store.groupMetadata[id]) {
-				store.groupMetadata[id] = { ...(store.groupMetadata[id] || {}), ...(update || {}) };
+			const metadata = await store.groupMetadata[id];
+			groupCache.set(id, metadata)
+			if (metadata) {
+				metadata = { ...(metadata || {}), ...(update || {}) };
 			}
 		}
 	});
 
 	// merubah status member
 	hisoka.ev.on('group-participants.update', ({ id, participants, action }) => {
-		const metadata = store.groupMetadata[id];
+		const metadata = await store.groupMetadata[id];
+		groupCache.set(id, metadata)
+//kecualikan untuk semua grup kecuali yg terdata
+		try {
+            for (let num of participants) {
+                // Get Profile Picture User
+                try {
+                    ppuser = await hisoka.profilePictureUrl(num, 'image')
+                } catch {
+                    ppuser = 'https://i0.wp.com/www.gambarunik.id/wp-content/uploads/2019/06/Top-Gambar-Foto-Profil-Kosong-Lucu-Tergokil-.jpg'
+                }
+
+                // Get Profile Picture Group
+                try {
+                    ppgroup = await hisoka.profilePictureUrl(id, 'image')
+                } catch {
+                    ppgroup = 'https://i0.wp.com/www.gambarunik.id/wp-content/uploads/2019/06/Top-Gambar-Foto-Profil-Kosong-Lucu-Tergokil-.jpg'
+                }
+
+                if (anu.action == 'add') {
+                    hisoka.sendMessage(id, { image: { url: ppuser }, contextInfo: { mentionedJid: [num] }, caption: `Welcome To ${metadata.subject} @${num.split("@")[0]}` })
+                } else if (anu.action == 'remove') {
+                    hisoka.sendMessage(id, { image: { url: ppuser }, contextInfo: { mentionedJid: [num] }, caption: `@${num.split("@")[0]} Leaving To ${metadata.subject}` })
+                }
+            }
+        } catch (err) {
+            console.log(err)
+        }
+		
 		if (metadata) {
 			switch (action) {
 				case 'add':
