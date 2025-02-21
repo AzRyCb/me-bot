@@ -95,36 +95,15 @@ const readMore = more.repeat(4001)
 *Ping :* *_${Number(neow - eold).toFixed(2)} milisecond(s)_*
 ${readMore}
 💻 *_Info Server_*
-*- Hostname :* ${os.hostname() || hisoka.user?.name}
-*- Platform :* ${os.platform()}
-*- OS :* ${os.version()} / ${os.release()}
-*- Arch :* ${os.arch()}
 *- RAM :* ${Func.formatSize(os.totalmem() - os.freemem(), false)} / ${Func.formatSize(os.totalmem(), false)}
 
 *Runtime Bot:*
 ${Func.runtime(process.uptime())}
 
-*Runtime OS:*
-${Func.runtime(os.uptime())}
-
 *_NodeJS Memory Usage_*
 ${Object.keys(used)
 	.map((key, _, arr) => `*- ${key.padEnd(Math.max(...arr.map(v => v.length)), ' ')} :* ${Func.formatSize(used[key])}`)
 	.join('\n')}
-*- Heap Executable :* ${Func.formatSize(heapStat?.total_heap_size_executable)}
-*- Physical Size :* ${Func.formatSize(heapStat?.total_physical_size)}
-*- Available Size :* ${Func.formatSize(heapStat?.total_available_size)}
-*- Heap Limit :* ${Func.formatSize(heapStat?.heap_size_limit)}
-*- Malloced Memory :* ${Func.formatSize(heapStat?.malloced_memory)}
-*- Peak Malloced Memory :* ${Func.formatSize(heapStat?.peak_malloced_memory)}
-*- Does Zap Garbage :* ${Func.formatSize(heapStat?.does_zap_garbage)}
-*- Native Contexts :* ${Func.formatSize(heapStat?.number_of_native_contexts)}
-*- Detached Contexts :* ${Func.formatSize(heapStat?.number_of_detached_contexts)}
-*- Total Global Handles :* ${Func.formatSize(heapStat?.total_global_handles_size)}
-*- Used Global Handles :* ${Func.formatSize(heapStat?.used_global_handles_size)}
-${
-	cpus[0]
-		? `
 
 *_Total CPU Usage_*
 ${cpus[0].model.trim()} (${cpu.speed} MHZ)\n${Object.keys(cpu.times)
