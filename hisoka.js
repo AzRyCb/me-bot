@@ -1,5 +1,5 @@
 import 'dotenv/config';
-
+import NodeCache from "node-cache";
 import makeWASocket, {
 	delay,
 	useMultiFileAuthState,
