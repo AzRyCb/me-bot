@@ -166,6 +166,7 @@ const startSock = async () => {
 		const metadata = await store.groupMetadata[id];
 		groupCache.set(id, metadata)
 //kecualikan untuk semua grup kecuali yg terdata
+		/*
 		try {
             for (let num of participants) {
                 // Get Profile Picture User
@@ -191,7 +192,7 @@ const startSock = async () => {
         } catch (err) {
             console.log(err)
         }
-		
+		*/
 		if (metadata) {
 			switch (action) {
 				case 'add':
