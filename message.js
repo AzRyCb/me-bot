@@ -147,47 +147,49 @@ ${cpus
 				break;
 
 				case 'getsw':
-			
-				{
-					if (!store.messages['status@broadcast'].array.length === 0) throw 'Gaada 1 status pun';
-					let contacts = Object.values(store.contacts);
-					let [who, value] = m.text.split(/[,|\-+&]/);
-					value = value?.replace(/\D+/g, '');
+{
+    if (!store.messages['status@broadcast'].array.length) throw 'Gaada 1 status pun';
+    let contacts = Object.values(store.contacts);
+    let [who, value] = m.text.split(/[,|\-+&]/);
+    value = value?.replace(/\D+/g, '');
 
-					let sender;
-					if (m.mentions.length !== 0) sender = m.mentions[0];
-					else if (m.text) sender = contacts.find(v => [v.name, v.verifiedName, v.notify].some(name => name && name.toLowerCase().includes(who.toLowerCase())))?.id;
+    let sender;
+    if (m.mentions.length !== 0) sender = m.mentions[0];
+    else if (m.text) sender = contacts.find(v => [v.name, v.verifiedName, v.notify].some(name => name && name.toLowerCase().includes(who.toLowerCase())))?.id;
 
-					let stories = store.messages['status@broadcast'].array;
-					let story = stories.filter(v => (v.key && v.key.participant === sender) || v.participant === sender).filter(v => v.message && v.message.protocolMessage?.type !== 0);
-					if (story.length === 0) throw 'Gaada sw nya'
-					const result = {};
-					story.forEach(obj => {
-						let participant = obj.key.participant || obj.participant;
-						participant = jidNormalizedUser(participant === 'status_me' ? hisoka.user.id : participant);
-						if (!result[participant]) {
-							result[participant] = [];
-						}
-						result[participant].push(obj);
-					});
-					let type = mType => (getContentType(mType) === 'extendedTextMessage' ? 'text' : getContentType(mType).replace('Message', ''));
-					let text = '';
-					for (let id of Object.keys(result)) {
-						if (!id) return;
-						text += `*- ${hisoka.getName(id)}*\n`;
-						//text += `${result[id].map((v, i) => `${i + 1}. ${type(v.message)}`).join('\n')}\n\n`;
-					}
-					if (value) {
-						if (story.length < value) throw 'Jumlahnya ga sampe segitu';
-						await m.reply({ forward: story[value - 1], force: true });
-					} else {
-						for (let msg of story) {
-							await delay(1500);
-							await m.reply(text.trim(), {forward: msg, force: true });
-						}
-					}
-				}
-				break;
+    let stories = store.messages['status@broadcast'].array;
+    let story = stories.filter(v => (v.key && v.key.participant === sender) || v.participant === sender).filter(v => v.message && v.message.protocolMessage?.type !== 0);
+    if (story.length === 0) throw 'Gaada sw nya';
+
+    const result = {};
+    story.forEach(obj => {
+        let participant = obj.key.participant || obj.participant;
+        participant = jidNormalizedUser(participant === 'status_me' ? hisoka.user.id : participant);
+        if (!result[participant]) {
+            result[participant] = [];
+        }
+        result[participant].push(obj);
+    });
+
+    if (value) {
+        let keys = Object.keys(result);
+        if (keys.length === 0 || story.length < value) throw 'Jumlahnya ga sampe segitu';
+
+        let owner = hisoka.getName(keys[0]); // Ambil dari ID yang bener
+        await m.reply(`Story ini milik: *${owner}*`);
+        await m.reply({ forward: story[value - 1], force: true });
+    } else {
+        for (let id of Object.keys(result)) {
+            for (let msg of result[id]) {
+                await delay(1500);
+                let owner = hisoka.getName(id);
+                await m.reply(`Story ini milik: *${owner}*`);
+                await m.reply({ forward: msg, force: true });
+            }
+        }
+    }
+}
+break;
 
 			case 'listsw':
 				{
