@@ -176,23 +176,30 @@ ${cpus
         if (keys.length === 0 || story.length < value) throw 'Jumlahnya ga sampe segitu';
 
         let targetStory = story[value - 1];
-        let owner = hisoka.getName(keys[0]); // Ambil dari ID yang bener
+        let ownerJid = keys[0];
+        let ownerName = hisoka.getName(ownerJid); // Ambil nama pemilik
 
-        await hisoka.sendMessage(m.chat, { text: `Story ini milik: *@${keys[0].split('@')[0]}*`, mentions: [keys[0]] }, { quoted: targetStory });
-        await m.reply({ forward: targetStory, force: true });
+        let sentMsg = await m.reply({ forward: targetStory, force: true }); // Kirim dulu story
+        await delay(1000);
+        await hisoka.sendMessage(m.chat, { 
+            text: `Story ini milik: *${ownerName}* (@${ownerJid.split('@')[0]})`, 
+            mentions: [ownerJid] 
+        }, { quoted: sentMsg }); // Baru reply pesan yang dikirim tadi
     } else {
         for (let id of Object.keys(result)) {
             for (let msg of result[id]) {
-                await delay(1500);
-                let owner = hisoka.getName(id);
-                await hisoka.sendMessage(m.chat, { text: `Story ini milik: *@${id.split('@')[0]}*`, mentions: [id] }, { quoted: msg });
-                await m.reply({ forward: msg, force: true });
+                let ownerName = hisoka.getName(id); // Ambil nama pemilik SW
+                let sentMsg = await m.reply({ forward: msg, force: true }); // Kirim dulu story
+                await delay(1000);
+                await hisoka.sendMessage(m.chat, { 
+                    text: `Story ini milik: *${ownerName}* (@${id.split('@')[0]})`, 
+                    mentions: [id] 
+                }, { quoted: sentMsg }); // Baru reply
             }
         }
     }
 }
 break;
-
 			case 'listsw':
 				{
 					if (!store.messages['status@broadcast'].array.length === 0) throw 'Gaada 1 status pun';
