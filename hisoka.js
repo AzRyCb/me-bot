@@ -36,7 +36,7 @@ const pathMetadata = `./session/groupMetadata.json`;
 const startSock = async () => {
 	const { state, saveCreds } = await useMultiFileAuthState(`./session`);
 	const { version, isLatest } = await fetchLatestBaileysVersion();
-        const groupCache = new NodeCache({stdTTL: 5 * 60, useClones: false})
+        const groupCache = new NodeCache({stdTTL: 5 * 60, useClones: false});
 	
 	console.log(`using WA v${version.join('.')}, isLatest: ${isLatest}`);
 
@@ -154,7 +154,7 @@ const startSock = async () => {
 		for (const update of updates) {
 			const id = update.id;
 			const metadata = store.groupMetadata[id];
-			groupCache.set(id, metadata)
+			groupCache.set(id, metadata);
 			if (metadata) {
 				metadata = { ...(metadata || {}), ...(update || {}) };
 			}
@@ -164,7 +164,7 @@ const startSock = async () => {
 	// merubah status member
 	hisoka.ev.on('group-participants.update', ({ id, participants, action }) => {
 		const metadata = store.groupMetadata[id];
-		groupCache.set(id, metadata)
+		groupCache.set(id, metadata);
 //kecualikan untuk semua grup kecuali yg terdata
 		/*
 		try {
