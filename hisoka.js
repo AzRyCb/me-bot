@@ -262,8 +262,7 @@ const startSock = async () => {
 		// kanggo kes
 		await (await import(`./message.js?v=${Date.now()}`)).default(hisoka, store, m);
 	});
-
-	setInterval(async () => {
+	
 	setInterval(async () => {
     // write contacts and metadata
     if (store.groupMetadata) fs.writeFileSync(pathMetadata, JSON.stringify(store.groupMetadata));
@@ -285,6 +284,7 @@ const startSock = async () => {
         try {
             await clearSession(folderPath);
         } finally {
+		await delay(3000)
             exec('npm run restart:pm2', err => {
                 if (err) process.send('reset');
             });
