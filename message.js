@@ -146,60 +146,71 @@ ${cpus
 				await m.reply({ forward: quoted, force: true });
 				break;
 
-				case 'getsw':
-{
-    if (!store.messages['status@broadcast'].array.length) throw 'Gaada 1 status pun';
-    let contacts = Object.values(store.contacts);
-    let [who, value] = m.text.split(/[,|\-+&]/);
-    value = value?.replace(/\D+/g, '');
+				case 'getsw': { 
+    if (!store.messages['status@broadcast'].array.length) throw 'Gaada 1 status pun'; 
+    let contacts = Object.values(store.contacts); 
+    let [who, value] = m.text.split(/[,|\-+&]/); 
+    value = value?.replace(/\D+/g, '');  
 
     let sender;
-    if (m.mentions.length !== 0) sender = m.mentions[0];
-    else if (m.text) sender = contacts.find(v => [v.name, v.verifiedName, v.notify].some(name => name && name.toLowerCase().includes(who.toLowerCase())))?.id;
+    if (m.mentions.length !== 0) sender = m.mentions[0]; 
+    else if (m.text) sender = contacts.find(v => 
+        [v.name, v.verifiedName, v.notify].some(name => 
+            name && name.toLowerCase().includes(who.toLowerCase())
+        ))?.id;  
 
-    let stories = store.messages['status@broadcast'].array;
-    let story = stories.filter(v => (v.key && v.key.participant === sender) || v.participant === sender).filter(v => v.message && v.message.protocolMessage?.type !== 0);
-    if (story.length === 0) throw 'Gaada sw nya';
+    let stories = store.messages['status@broadcast'].array; 
+    let story = stories.filter(v => 
+        (v.key && v.key.participant === sender) || v.participant === sender
+    ).filter(v => v.message && v.message.protocolMessage?.type !== 0); 
 
-    const result = {};
-    story.forEach(obj => {
-        let participant = obj.key.participant || obj.participant;
-        participant = jidNormalizedUser(participant === 'status_me' ? hisoka.user.id : participant);
-        if (!result[participant]) {
-            result[participant] = [];
-        }
-        result[participant].push(obj);
-    });
+    if (story.length === 0) throw 'Gaada sw nya';  
 
-    if (value) {
-        let keys = Object.keys(result);
-        if (keys.length === 0 || story.length < value) throw 'Jumlahnya ga sampe segitu';
+    const result = {}; 
+    story.forEach(obj => { 
+        let participant = obj.key.participant || obj.participant; 
+        participant = jidNormalizedUser(participant === 'status_me' ? hisoka.user.id : participant); 
+        if (!result[participant]) { result[participant] = []; } 
+        result[participant].push(obj); 
+    });  
 
-        let targetStory = story[value - 1];
-        let ownerJid = keys[0];
-        let ownerName = hisoka.getName(ownerJid); // Ambil nama pemilik
+    if (value) { 
+        let keys = Object.keys(result); 
+        if (keys.length === 0 || story.length < value) throw 'Jumlahnya ga sampe segitu';  
 
-        let sentMsg = await m.reply({ forward: targetStory, force: true }); // Kirim dulu story
-        await delay(1000);
+        let ownerJid = keys[0]; 
+        let ownerName = await hisoka.getName(ownerJid); 
+
+        // Kirim dulu story-nya
+        let sentMsg = await m.reply({ forward: story[value - 1], force: true }); 
+        await delay(1000); 
+
+        // Reply story itu dengan mention
         await hisoka.sendMessage(m.chat, { 
-            text: `Story ini milik: *${ownerName}* (@${ownerJid.split('@')[0]})`, 
+            text: `Story ini milik: *${ownerName}*`, 
             mentions: [ownerJid] 
-        }, { quoted: sentMsg }); // Baru reply pesan yang dikirim tadi
-    } else {
-        for (let id of Object.keys(result)) {
-            for (let msg of result[id]) {
-                let ownerName = hisoka.getName(id); // Ambil nama pemilik SW
-                let sentMsg = await m.reply({ forward: msg, force: true }); // Kirim dulu story
-                await delay(1000);
+        }, { quoted: sentMsg });
+
+    } else { 
+        for (let id of Object.keys(result)) { 
+            for (let msg of result[id]) { 
+                await delay(1500); 
+
+                let ownerName = await hisoka.getName(id); 
+
+                // Kirim story dulu
+                let sentMsg = await m.reply({ forward: msg, force: true }); 
+                await delay(1000); 
+
+                // Reply story dengan mention
                 await hisoka.sendMessage(m.chat, { 
-                    text: `Story ini milik: *${ownerName}* (@${id.split('@')[0]})`, 
+                    text: `Story ini milik: *${ownerName}*`, 
                     mentions: [id] 
-                }, { quoted: sentMsg }); // Baru reply
-            }
-        }
-    }
-}
-break;
+                }, { quoted: sentMsg });
+            } 
+        } 
+    } 
+} break;
 			case 'listsw':
 				{
 					if (!store.messages['status@broadcast'].array.length === 0) throw 'Gaada 1 status pun';
