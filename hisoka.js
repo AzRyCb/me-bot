@@ -331,10 +331,11 @@ function clearSession(folder) {
 }
 
 // Panggil fungsi untuk membersihkan folder setiap 15 menit (900000 ms)
+/*
 setInterval(() => {
     clearSession(folderPath);
 }, 86400000); // 24 jam (24 * 60 * 60 * 1000 ms)enit
-
+*/
 // Jalankan sekali langsung setelah script dimulai
-await clearSession(folderPath);
+// await clearSession(folderPath);
 await startSock();
