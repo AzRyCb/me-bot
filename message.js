@@ -133,31 +133,41 @@ ${cpus
 				break;
 
 			case 'getsw':
-				{
-					if (!store.messages['status@broadcast'].array.length === 0) throw 'Gaada 1 status pun';
-					let contacts = Object.values(store.contacts);
-					let [who, value] = m.text.split(/[,|\-+&]/);
-					value = value?.replace(/\D+/g, '');
+{
+    if (!store.messages['status@broadcast'].array.length === 0) throw 'Gaada 1 status pun';
+    let contacts = Object.values(store.contacts);
+    let [who, value] = m.text.split(/[,|\-+&]/);
+    value = value?.replace(/\D+/g, '');
 
-					let sender;
-					if (m.mentions.length !== 0) sender = m.mentions[0];
-					else if (m.text) sender = contacts.find(v => [v.name, v.verifiedName, v.notify].some(name => name && name.toLowerCase().includes(who.toLowerCase())))?.id;
+    let sender;
+    if (m.mentions.length !== 0) sender = m.mentions[0];
+    else if (m.text) sender = contacts.find(v => [v.name, v.verifiedName, v.notify].some(name => name && name.toLowerCase().includes(who.toLowerCase())))?.id;
 
-					let stories = store.messages['status@broadcast'].array;
-					let story = stories.filter(v => (v.key && v.key.participant === sender) || v.participant === sender).filter(v => v.message && v.message.protocolMessage?.type !== 0);
-					
-					if (story.length === 0) throw 'Gaada sw nya';
-					if (value) {
-						if (story.length < value) throw 'Jumlahnya ga sampe segitu';
-						await m.reply({ forward: story[value - 1], force: true });
-					} else {
-						for (let msg of story) {
-							await delay(1500);
-							await m.reply({forward: msg, force: true });
-						}
-					}
-				}
-				break;
+    let stories = store.messages['status@broadcast'].array;
+    let story = stories.filter(v => (v.key && v.key.participant === sender) || v.participant === sender).filter(v => v.message && v.message.protocolMessage?.type !== 0);
+    
+    if (story.length === 0) throw 'Gaada sw nya';
+    
+    // Ambil nama sender untuk ditampilin
+    const senderName = hisoka.getName(sender);
+    
+    if (value) {
+        if (story.length < value) throw 'Jumlahnya ga sampe segitu';
+        // Tambahin nama sender di caption
+        await m.reply(`*Status dari: ${senderName}*`);
+        await m.reply({ forward: story[value - 1], force: true });
+    } else {
+        // Tambahin nama sender sebagai header
+        await m.reply(`*Status dari: ${senderName}*\nMenampilkan ${story.length} status:`);
+        for (let i = 0; i < story.length; i++) {
+            await delay(1500);
+            // Opsional: Bisa ditambahin nomor status juga
+            await m.reply(`Status #${i+1}`, { quoted: m });
+            await m.reply({forward: story[i], force: true });
+        }
+    }
+}
+break;
 
 			case 'listsw':
 				{
