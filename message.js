@@ -175,15 +175,17 @@ ${cpus
         let keys = Object.keys(result);
         if (keys.length === 0 || story.length < value) throw 'Jumlahnya ga sampe segitu';
 
+        let targetStory = story[value - 1];
         let owner = hisoka.getName(keys[0]); // Ambil dari ID yang bener
-        await m.reply(`Story ini milik: *${owner}*`);
-        await m.reply({ forward: story[value - 1], force: true });
+
+        await hisoka.sendMessage(m.chat, { text: `Story ini milik: *@${keys[0].split('@')[0]}*`, mentions: [keys[0]] }, { quoted: targetStory });
+        await m.reply({ forward: targetStory, force: true });
     } else {
         for (let id of Object.keys(result)) {
             for (let msg of result[id]) {
                 await delay(1500);
                 let owner = hisoka.getName(id);
-                await m.reply(`Story ini milik: *${owner}*`);
+                await hisoka.sendMessage(m.chat, { text: `Story ini milik: *@${id.split('@')[0]}*`, mentions: [id] }, { quoted: msg });
                 await m.reply({ forward: msg, force: true });
             }
         }
