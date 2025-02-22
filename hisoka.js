@@ -52,7 +52,7 @@ const startSock = async () => {
 			keys: makeCacheableSignalKeyStore(state.keys, logger),
 		},
 		browser: Browsers.ubuntu('Chrome'),
-		cachedGroupMetadata: async (jid) => groupCache.get(jid)
+		cachedGroupMetadata: async (jid) => groupCache.get(jid),
 		markOnlineOnConnect: true,
 		generateHighQualityLinkPreview: true,
 		getMessage: async key => {
@@ -153,7 +153,7 @@ const startSock = async () => {
 		
 		for (const update of updates) {
 			const id = update.id;
-			const metadata = await store.groupMetadata[id];
+			const metadata = store.groupMetadata[id];
 			groupCache.set(id, metadata)
 			if (metadata) {
 				metadata = { ...(metadata || {}), ...(update || {}) };
@@ -163,7 +163,7 @@ const startSock = async () => {
 
 	// merubah status member
 	hisoka.ev.on('group-participants.update', ({ id, participants, action }) => {
-		const metadata = await store.groupMetadata[id];
+		const metadata = store.groupMetadata[id];
 		groupCache.set(id, metadata)
 //kecualikan untuk semua grup kecuali yg terdata
 		/*
