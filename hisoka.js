@@ -264,28 +264,33 @@ const startSock = async () => {
 	});
 
 	setInterval(async () => {
-		// write contacts and metadata
-		if (store.groupMetadata) fs.writeFileSync(pathMetadata, JSON.stringify(store.groupMetadata));
-		if (store.contacts) fs.writeFileSync(pathContacts, JSON.stringify(store.contacts));
+	setInterval(async () => {
+    // write contacts and metadata
+    if (store.groupMetadata) fs.writeFileSync(pathMetadata, JSON.stringify(store.groupMetadata));
+    if (store.contacts) fs.writeFileSync(pathContacts, JSON.stringify(store.contacts));
 
-		// write store
-		if (process.env.WRITE_STORE === 'true') store.writeToFile(`./session/store.json`);
+    // write store
+    if (process.env.WRITE_STORE === 'true') store.writeToFile(`./session/store.json`);
 
-		// untuk auto restart ketika RAM sisa 300MB
-		const memoryUsage = os.totalmem() - os.freemem();
+    // untuk auto restart ketika RAM sisa 300MB
+    const memoryUsage = os.totalmem() - os.freemem();
 
-		if (memoryUsage > os.totalmem() - parseFileSize(process.env.AUTO_RESTART, false)) {
-			await hisoka.sendMessage(
-				jidNormalizedUser(hisoka.user.id),
-				{ text: `penggunaan RAM mencapai *${formatSize(memoryUsage)}* waktunya merestart...` },
-				{ ephemeralExpiration: 24 * 60 * 60 * 1000 }
-			);
-			await clearSession(folderPath);
-			await exec('npm run restart:pm2', err => {
-				if (err) return process.send('reset');
-			});
-		}
-	}, 10 * 1000); // tiap 10 detik
+    if (memoryUsage > os.totalmem() - parseFileSize(process.env.AUTO_RESTART, false)) {
+        await hisoka.sendMessage(
+            jidNormalizedUser(hisoka.user.id),
+            { text: `penggunaan RAM mencapai *${formatSize(memoryUsage)}* waktunya merestart...` },
+            { ephemeralExpiration: 24 * 60 * 60 * 1000 }
+        );
+
+        try {
+            await clearSession(folderPath);
+        } finally {
+            exec('npm run restart:pm2', err => {
+                if (err) process.send('reset');
+            });
+        }
+    }
+}, 10 * 1000); // tiap 10 detik
 
 	process.on('uncaughtException', console.error);
 	process.on('unhandledRejection', console.error);
