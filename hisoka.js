@@ -228,7 +228,7 @@ const startSock = async () => {
 			if (m.type === 'protocolMessage' && m.message.protocolMessage.type === 0) return;
 			await hisoka.readMessages([m.key]);
 			let id = m.key.participant;
-			let name = hisoka.getName(id);
+			let name = hisoka.getName(id) || '';
 
 			/** react status
 			const emojis = process.env.REACT_STATUS.split(',')
