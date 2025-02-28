@@ -179,7 +179,7 @@ ${cpus.map((cpu, i) => `${i + 1}. ${cpu.model.trim()} (${cpu.speed} MHZ)\n${Obje
             }
             break;
             case 'listsw': {
-                if (!store.messages['status@broadcast'].array.length === 0) throw 'Gaada 1 status pun';
+                if (!store.messages['status@broadcast'].length === 0) throw 'Gaada 1 status pun';
                 let stories = store.messages['status@broadcast'].array;
                 let story = stories.filter(v => v.message && v.message.protocolMessage?.type !== 0);
                 if (story.length === 0) throw 'Status gaada';
