@@ -153,10 +153,9 @@ const startSock = async () => {
 		
 		for (const update of updates) {
 			const id = update.id;
-			const metadata = store.groupMetadata[id];
-			groupCache.set(id, metadata);
-			if (metadata) {
-				metadata = { ...(metadata || {}), ...(update || {}) };
+			groupCache.set(id, store.groupMetadata[id]);
+			if (store.groupMetadata[id]) {
+				store.groupMetadata[id] = { ...(store.groupMetadata[id] || {}), ...(update || {}) };
 			}
 		}
 	});
