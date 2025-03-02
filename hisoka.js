@@ -299,7 +299,11 @@ const startSock = async () => {
 const folderPath = './session';
 
 // Daftar file yang tidak akan dihapus
-const excludedFiles = ['creds.json', 'groupMetadata.json', 'contacts.json', 'store.json'];
+const excludedFiles = ['creds.json', 
+		       //'groupMetadata.json',
+		       'contacts.json'
+		       //'store.json'
+		      ];
 
 // Fungsi untuk menghapus file
 function clearSession(folder) {
@@ -335,11 +339,13 @@ function clearSession(folder) {
 }
 
 // Panggil fungsi untuk membersihkan folder setiap 15 menit (900000 ms)
-/*
+
 setInterval(() => {
     clearSession(folderPath);
+	delay(3000);
+    process.send('reset');
 }, 86400000); // 24 jam (24 * 60 * 60 * 1000 ms)enit
-*/
+
 // Jalankan sekali langsung setelah script dimulai
 // await clearSession(folderPath);
 await startSock();
